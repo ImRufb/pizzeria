@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizzería</title>
+    <!-- CDN de Font Awesome para los Logos e Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ============================== */
+        /* Estilos Generales - Paleta Fuego (Rojo y Amarillo) */
+        /* ============================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #3a0007 0%, #1a0003 100%);
+            color: #f5f5f5;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ============================== */
+        /* Encabezado (Header) */
+        /* ============================== */
+        header {
+            background: linear-gradient(180deg, #d31027 0%, #ea384d 50%, #9b0617 100%);
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 4px solid #ffcc00;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            position: relative;
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            letter-spacing: 2px;
+            font-weight: 900;
+            color: #ffcc00;
+            text-transform: uppercase;
+            text-shadow: 3px 3px 0px #70020d, 0 2px 15px rgba(255, 204, 0, 0.6);
+        }
+
+        header p {
+            color: #ffffff;
+            font-size: 1rem;
+            margin-top: 5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ============================== */
+        /* Layout Principal de Tienda */
+        /* ============================== */
+        .layout-principal {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .tienda-container {
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .producto-card {
+            background: linear-gradient(135deg, #4a040b 0%, #1f0003 100%);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #800513;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .producto-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(211, 16, 39, 0.3);
+            border-color: #ffcc00;
+        }
+
+        .producto-imagen {
+            width: 100%;
+            height: 260px;
+            background: radial-gradient(circle, #5a030c 0%, #250104 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-bottom: 2px solid #800513;
+        }
+
+        .producto-imagen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .producto-info {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex-grow: 1;
+        }
+
+        .producto-titulo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .producto-precio {
+            font-size: 1.5rem;
+            color: #ffcc00;
+            font-weight: 800;
+        }
+
+        /* ============================== */
+        /* Selectores y Personalización */
+        /* ============================== */
+        .selector-talla-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .seccion-label {
+            font-size: 0.8rem;
+            color: #ffb3b9;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .select-talla, .select-metodo {
+            background: #250104;
+            color: #ffffff;
+            border: 1px solid #800513;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            width: 100%;
+            transition: border-color 0.3s;
+        }
+
+        .select-talla:focus, .select-metodo:focus {
+            border-color: #ffcc00;
+        }
+
+        /* Contenedor de Ingredientes (Checkboxes) */
+        .personalizar-ingredientes {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid #800513;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .grid-ingredientes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .opcion-ingrediente {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #f0d0d3;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .opcion-ingrediente input {
+            accent-color: #ffcc00;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* Acciones */
+        .acciones-producto {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+            align-items: center;
+        }
+
+        .selector-cantidad-previo {
+            flex: 1;
+            height: 45px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            background: linear-gradient(135deg, #3d0208 0%, #1f0003 100%);
+            border: 1px solid #800513;
+            border-radius: 6px;
+            overflow: hidden;
+            align-items: center;
+        }
+
+        .selector-cantidad-previo button {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: bold;
+            height: 100%;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .selector-cantidad-previo button:hover {
+            background: rgba(255, 204, 0, 0.15);
+            color: #ffcc00;
+        }
+
+        .selector-cantidad-previo .valor-cantidad {
+            color: #ffffff;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .btn-anadir-carrito {
+            flex: 1.5;
+            height: 45px;
+            background: linear-gradient(135deg, #ffcc00 0%, #ffaa00 100%);
+            color: #5a0007;
+            border: none;
+            font-weight: 800;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-anadir-carrito:hover {
+            background: linear-gradient(135deg, #d31027 0%, #9b0617 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(211,16,39,0.4);
+        }
+
+        /* ============================== */
+        /* Botón Flotante Lateral */
+        /* ============================== */
+        .btn-carrito-flotante {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #ffcc00 0%, #ffaa00 100%);
+            color: #5a0007;
+            padding: 18px 14px;
+            border-radius: 12px 0 0 12px;
+            border: 2px solid #ffffff;
+            border-right: none;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: -4px 0 20px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .btn-carrito-flotante:hover {
+            padding-right: 22px;
+            background: linear-gradient(135deg, #ffaa00 0%, #e69500 100%);
+        }
+
+        .btn-carrito-flotante i {
+            font-size: 1.4rem;
+        }
+
+        .contador-carrito {
+            background: linear-gradient(135deg, #d31027 0%, #9b0617 100%);
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 3px 7px;
+            border-radius: 10px;
+            min-width: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        /* ============================== */
+        /* Panel Lateral del Carrito */
+        /* ============================== */
+        .panel-carrito {
+            position: fixed;
+            top: 0;
+            right: -400px; 
+            width: 380px;
+            max-width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #4a040b 0%, #150002 100%);
+            border-left: 2px solid #ffcc00;
+            box-shadow: -10px 0 40px rgba(0,0,0,0.8);
+            z-index: 1000;
+            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+        }
+
+        .panel-carrito.abierto {
+            right: 0;
+        }
+
+        .panel-carrito-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #800513;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .panel-carrito-header h2 {
+            font-size: 1.2rem;
+            color: #ffcc00;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn-cerrar-panel {
+            background: none;
+            border: none;
+            color: #ffb3b9;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .btn-cerrar-panel:hover {
+            color: #fff;
+        }
+
+        .lista-carrito {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+            margin-bottom: 15px;
+        }
+
+        .item-carrito {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #250104 0%, #150002 100%);
+            padding: 12px;
+            border: 1px solid #800513;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .item-carrito-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .item-carrito-titulo {
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .item-carrito-talla {
+            color: #ffcc00;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .item-carrito-ingredientes {
+            color: #ffb3b9;
+            font-size: 0.75rem;
+            font-style: italic;
+        }
+
+        .btn-eliminar-item {
+            background: none;
+            border: none;
+            color: #ff4444;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 5px;
+            transition: transform 0.2s;
+        }
+
+        .btn-eliminar-item:hover {
+            transform: scale(1.1);
+            color: #ff6666;
+        }
+
+        .carrito-vacio-txt {
+            color: #ffb3b9;
+            text-align: center;
+            font-size: 0.9rem;
+            padding: 40px 0;
+            opacity: 0.6;
+        }
+
+        .total-carrito {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            border-top: 2px solid #800513;
+            padding-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-checkout {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border-top: 2px solid #800513;
+            padding-top: 15px;
+            background: linear-gradient(135deg, #3d0208 0%, #1f0003 100%);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #800513;
+            overflow-y: auto;
+            max-height: 320px;
+        }
+
+        .grupo-campo {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .grupo-campo label {
+            font-size: 0.75rem;
+            color: #ffb3b9;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .grupo-campo input {
+            background-color: #150002;
+            border: 1px solid #800513;
+            color: #ffffff;
+            padding: 10px;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            transition: border-color 0.3s;
+        }
+
+        .grupo-campo input:focus {
+            outline: none;
+            border-color: #ffcc00;
+        }
+
+        .btn-finalizar-pedido {
+            background: linear-gradient(135deg, #25d366 0%, #1ebd58 100%);
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 6px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 5px;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(37,211,102,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .overlay-fondo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 998;
+            display: none;
+            backdrop-filter: blur(3px);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(180deg, #150002 0%, #000000 100%);
+            color: #ffb3b9;
+            opacity: 0.7;
+            margin-top: 60px;
+            border-top: 2px solid #800513;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="appContent">
+        
+        <header>
+            <h1>Pizzería</h1>
+            <p>Arma tu combinación ideal desde el menú</p>
+        </header>
+
+        <!-- Botón Carrito Flotante -->
+        <button class="btn-carrito-flotante" onclick="togglePanelCarrito(true)">
+            <i class="fas fa-pizza-slice"></i>
+            <span class="contador-carrito" id="contadorCarrito">0</span>
+        </button>
+
+        <div class="overlay-fondo" id="overlayFondo" onclick="togglePanelCarrito(false)"></div>
+
+        <!-- Panel Lateral del Carrito -->
+        <aside class="panel-carrito" id="panelCarrito">
+            <div class="panel-carrito-header">
+                <h2>Tu Orden</h2>
+                <button class="btn-cerrar-panel" onclick="togglePanelCarrito(false)">&times;</button>
+            </div>
+            
+            <div class="lista-carrito" id="listaCarrito">
+                <p class="carrito-vacio-txt">No has añadido pizzas a tu orden.</p>
+            </div>
+
+            <div class="total-carrito">
+                <span>Total:</span>
+                <span id="totalMonto">$0.00</span>
+            </div>
+
+            <div class="form-checkout">
+                <div class="grupo-campo">
+                    <label for="checkNombre">Nombre de quien recibe</label>
+                    <input type="text" id="checkNombre" placeholder="Tu Nombre y Apellido">
+                </div>
+
+                <div class="grupo-campo">
+                    <label for="checkMetodo">Ubicación / Modalidad</label>
+                    <select id="checkMetodo" class="select-metodo" onchange="manejarCambioMetodo()">
+                        <option value="Domicilio" selected>Domicilio (Delivery / Mesa)</option>
+                        <option value="Retiro">Retirar en el Local</option>
+                    </select>
+                </div>
+
+                <div class="grupo-campo" id="contenedorDireccion">
+                    <label for="checkDireccion">Dirección de Entrega / Mesa</label>
+                    <input type="text" id="checkDireccion" placeholder="Calle, Av. o Nro de Mesa">
+                </div>
+                
+                <button class="btn-finalizar-pedido" onclick="enviarCarritoWhatsApp()">
+                    <i class="fab fa-whatsapp"></i> Enviar Pedido por WhatsApp
+                </button>
+            </div>
+        </aside>
+
+        <!-- Menú de Productos Principal -->
+        <div class="layout-principal">
+            <main class="tienda-container" id="tiendaContainer">
+                
+                <!-- Pizza 1 -->
+                <div class="producto-card" data-id="p1" data-titulo="Pizza Pepperoni & Fuego" data-precio="12.00">
+                    <div class="producto-imagen">
+                        <img src="https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=600&auto=format&fit=crop&q=80" alt="Pizza Pepperoni & Fuego">
+                    </div>
+                    <div class="producto-info">
+                        <p class="producto-titulo">Pizza Pepperoni & Fuego</p>
+                        <p class="producto-precio">$12.00</p>
+                        
+                        <div class="selector-talla-container">
+                            <span class="seccion-label">Tamaño:</span>
+                            <select id="talla-p1" class="select-talla">
+                                <option value="Personal">Personal (4 Porciones)</option>
+                                <option value="Mediana" selected>Mediana (8 Porciones)</option>
+                                <option value="Familiar">Familiar (12 Porciones)</option>
+                            </select>
+                        </div>
+
+                        <div class="personalizar-ingredientes">
+                            <span class="seccion-label">Selecciona tus ingredientes:</span>
+                            <div class="grid-ingredientes">
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Pepperoni" checked> Pepperoni</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Queso Extra" checked> Queso Extra</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Champiñones"> Champiñones</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Pimentón"> Pimentón</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Tocineta"> Tocineta</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Maíz"> Maíz</label>
+                            </div>
+                        </div>
+
+                        <div class="acciones-producto">
+                            <div class="selector-cantidad-previo">
+                                <button onclick="modificarContadorPrevio('p1', -1)">-</button>
+                                <span class="valor-cantidad" id="cant-previo-p1">1</span>
+                                <button onclick="modificarContadorPrevio('p1', 1)">+</button>
+                            </div>
+                            <button class="btn-anadir-carrito" onclick="agregarAlCarrito('p1')">
+                                <i class="fas fa-plus"></i> Añadir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pizza 2 (NUEVA): Fugazzeta Suprema -->
+                <div class="producto-card" data-id="p2" data-titulo="Pizza Fugazzeta Suprema" data-precio="11.50">
+                    <div class="producto-imagen">
+                        <img src="https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=600&auto=format&fit=crop&q=80" alt="Pizza Fugazzeta">
+                    </div>
+                    <div class="producto-info">
+                        <p class="producto-titulo">Pizza Fugazzeta Suprema</p>
+                        <p class="producto-precio">$11.50</p>
+                        
+                        <div class="selector-talla-container">
+                            <span class="seccion-label">Tamaño:</span>
+                            <select id="talla-p2" class="select-talla">
+                                <option value="Personal">Personal (4 Porciones)</option>
+                                <option value="Mediana" selected>Mediana (8 Porciones)</option>
+                                <option value="Familiar">Familiar (12 Porciones)</option>
+                            </select>
+                        </div>
+
+                        <div class="personalizar-ingredientes">
+                            <span class="seccion-label">Selecciona tus ingredientes:</span>
+                            <div class="grid-ingredientes">
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Cebolla Caramelizada" checked> Cebolla Caram.</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Doble Queso" checked> Doble Queso</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Orégano" checked> Orégano</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Aceitunas Negras"> Aceitunas N.</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Jamón"> Jamón</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Tocineta"> Tocineta</label>
+                            </div>
+                        </div>
+
+                        <div class="acciones-producto">
+                            <div class="selector-cantidad-previo">
+                                <button onclick="modificarContadorPrevio('p2', -1)">-</button>
+                                <span class="valor-cantidad" id="cant-previo-p2">1</span>
+                                <button onclick="modificarContadorPrevio('p2', 1)">+</button>
+                            </div>
+                            <button class="btn-anadir-carrito" onclick="agregarAlCarrito('p2')">
+                                <i class="fas fa-plus"></i> Añadir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pizza 3 (NUEVA): Volcán BBQ -->
+                <div class="producto-card" data-id="p3" data-titulo="Pizza Volcán BBQ" data-precio="13.50">
+                    <div class="producto-imagen">
+                        <img src="https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=600&auto=format&fit=crop&q=80" alt="Pizza Volcán BBQ">
+                    </div>
+                    <div class="producto-info">
+                        <p class="producto-titulo">Pizza Volcán BBQ</p>
+                        <p class="producto-precio">$13.50</p>
+                        
+                        <div class="selector-talla-container">
+                            <span class="seccion-label">Tamaño:</span>
+                            <select id="talla-p3" class="select-talla">
+                                <option value="Personal">Personal (4 Porciones)</option>
+                                <option value="Mediana" selected>Mediana (8 Porciones)</option>
+                                <option value="Familiar">Familiar (12 Porciones)</option>
+                            </select>
+                        </div>
+
+                        <div class="personalizar-ingredientes">
+                            <span class="seccion-label">Selecciona tus ingredientes:</span>
+                            <div class="grid-ingredientes">
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Pollo Desmechado" checked> Pollo Desmech.</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Salsa BBQ" checked> Salsa BBQ</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Tocineta Crujiente" checked> Tocineta Cruj.</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Cebolla Morada"> Cebolla Morada</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Maíz Dulce"> Maíz Dulce</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Jalapeños"> Jalapeños 🔥</label>
+                            </div>
+                        </div>
+
+                        <div class="acciones-producto">
+                            <div class="selector-cantidad-previo">
+                                <button onclick="modificarContadorPrevio('p3', -1)">-</button>
+                                <span class="valor-cantidad" id="cant-previo-p3">1</span>
+                                <button onclick="modificarContadorPrevio('p3', 1)">+</button>
+                            </div>
+                            <button class="btn-anadir-carrito" onclick="agregarAlCarrito('p3')">
+                                <i class="fas fa-plus"></i> Añadir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pizza 4 (NUEVA): Cuatro Quesos Infierno -->
+                <div class="producto-card" data-id="p4" data-titulo="Pizza 4 Quesos Infierno" data-precio="14.00">
+                    <div class="producto-imagen">
+                        <img src="https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=600&auto=format&fit=crop&q=80" alt="Pizza Cuatro Quesos">
+                    </div>
+                    <div class="producto-info">
+                        <p class="producto-titulo">Pizza 4 Quesos Infierno</p>
+                        <p class="producto-precio">$14.00</p>
+                        
+                        <div class="selector-talla-container">
+                            <span class="seccion-label">Tamaño:</span>
+                            <select id="talla-p4" class="select-talla">
+                                <option value="Personal">Personal (4 Porciones)</option>
+                                <option value="Mediana" selected>Mediana (8 Porciones)</option>
+                                <option value="Familiar">Familiar (12 Porciones)</option>
+                            </select>
+                        </div>
+
+                        <div class="personalizar-ingredientes">
+                            <span class="seccion-label">Selecciona tus ingredientes:</span>
+                            <div class="grid-ingredientes">
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Mozzarella" checked> Mozzarella</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Parmesano" checked> Parmesano</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Queso Azul" checked> Queso Azul</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Provolone" checked> Provolone</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Miel picante"> Miel picante 🍯</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Albahaca Fresca"> Albahaca</label>
+                            </div>
+                        </div>
+
+                        <div class="acciones-producto">
+                            <div class="selector-cantidad-previo">
+                                <button onclick="modificarContadorPrevio('p4', -1)">-</button>
+                                <span class="valor-cantidad" id="cant-previo-p4">1</span>
+                                <button onclick="modificarContadorPrevio('p4', 1)">+</button>
+                            </div>
+                            <button class="btn-anadir-carrito" onclick="agregarAlCarrito('p4')">
+                                <i class="fas fa-plus"></i> Añadir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pizza 5 (NUEVA): Huerto Silvestre (Veggie) -->
+                <div class="producto-card" data-id="p5" data-titulo="Pizza Huerto Silvestre" data-precio="11.00">
+                    <div class="producto-imagen">
+                        <img src="https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=600&auto=format&fit=crop&q=80" alt="Pizza Vegetariana">
+                    </div>
+                    <div class="producto-info">
+                        <p class="producto-titulo">Pizza Huerto Silvestre</p>
+                        <p class="producto-precio">$11.00</p>
+                        
+                        <div class="selector-talla-container">
+                            <span class="seccion-label">Tamaño:</span>
+                            <select id="talla-p5" class="select-talla">
+                                <option value="Personal">Personal (4 Porciones)</option>
+                                <option value="Mediana" selected>Mediana (8 Porciones)</option>
+                                <option value="Familiar">Familiar (12 Porciones)</option>
+                            </select>
+                        </div>
+
+                        <div class="personalizar-ingredientes">
+                            <span class="seccion-label">Selecciona tus ingredientes:</span>
+                            <div class="grid-ingredientes">
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Champiñones" checked> Champiñones</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Pimentón Verde" checked> Pimentón Verde</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Maíz Dulce" checked> Maíz Dulce</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Cebolla Morada" checked> Cebolla Morada</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Aceitunas Negras"> Aceitunas N.</label>
+                                <label class="opcion-ingrediente"><input type="checkbox" value="Tomates Cherry"> Tomates Cherry</label>
+                            </div>
+                        </div>
+
+                        <div class="acciones-producto">
+                            <div class="selector-cantidad-previo">
+                                <button onclick="modificarContadorPrevio('p5', -1)">-</button>
+                                <span class="valor-cantidad" id="cant-previo-p5">1</span>
+                                <button onclick="modificarContadorPrevio('p5', 1)">+</button>
+                            </div>
+                            <button class="btn-anadir-carrito" onclick="agregarAlCarrito('p5')">
+                                <i class="fas fa-plus"></i> Añadir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 Pizzería. Todos los derechos reservados.</p>
+        </footer>
+
+    </div>
+
+    <!-- Lógica del Carrito en JavaScript -->
+    <script>
+        let carrito = [];
+
+        function modificarContadorPrevio(id, cambio) {
+            const el = document.getElementById(`cant-previo-${id}`);
+            let actual = parseInt(el.textContent);
+            actual += cambio;
+            if (actual < 1) actual = 1;
+            el.textContent = actual;
+        }
+
+        function togglePanelCarrito(abrir) {
+            const panel = document.getElementById('panelCarrito');
+            const overlay = document.getElementById('overlayFondo');
+            if (abrir) {
+                panel.classList.add('abierto');
+                overlay.style.display = 'block';
+            } else {
+                panel.classList.remove('abierto');
+                overlay.style.display = 'none';
+            }
+        }
+
+        function manejarCambioMetodo() {
+            const metodo = document.getElementById('checkMetodo').value;
+            const contenedorDir = document.getElementById('contenedorDireccion');
+            if (metodo === 'Retiro') {
+                contenedorDir.style.display = 'none';
+            } else {
+                contenedorDir.style.display = 'flex';
+            }
+        }
+
+        function agregarAlCarrito(id) {
+            const card = document.querySelector(`.producto-card[data-id="${id}"]`);
+            const titulo = card.getAttribute('data-titulo');
+            const precioBase = parseFloat(card.getAttribute('data-precio'));
+            const cantidad = parseInt(document.getElementById(`cant-previo-${id}`).textContent);
+            const talla = document.getElementById(`talla-${id}`).value;
+            
+            const checkboxes = card.querySelectorAll('.opcion-ingrediente input:checked');
+            let ingredientes = [];
+            checkboxes.forEach(cb => ingredientes.push(cb.value));
+            
+            if (ingredientes.length === 0) {
+                ingredientes.push("Solo masa y salsa");
+            }
+
+            const item = {
+                idUnique: Date.now() + Math.random().toString(36).substr(2, 5),
+                titulo: titulo,
+                precio: precioBase,
+                textPrecio: precioBase,
+                cantidad: cantidad,
+                talla: talla,
+                ingredientes: ingredientes.join(', ')
+            };
+
+            carrito.push(item);
+            document.getElementById(`cant-previo-${id}`).textContent = "1";
+            
+            renderizarCarrito();
+            togglePanelCarrito(true);
+        }
+
+        function eliminarDelCarrito(idUnique) {
+            carrito = carrito.filter(item => item.idUnique !== idUnique);
+            renderizarCarrito();
+        }
+
+        function renderizarCarrito() {
+            const lista = document.getElementById('listaCarrito');
+            const contador = document.getElementById('contadorCarrito');
+            const totalMonto = document.getElementById('totalMonto');
+            
+            if (carrito.length === 0) {
+                lista.innerHTML = '<p class="carrito-vacio-txt">No has añadido pizzas a tu orden.</p>';
+                contador.textContent = "0";
+                totalMonto.textContent = "$0.00";
+                return;
+            }
+
+            lista.innerHTML = "";
+            let total = 0;
+            let itemsTotales = 0;
+
+            carrito.forEach(item => {
+                const subtotal = item.precio * item.cantidad;
+                total += subtotal;
+                itemsTotales += item.cantidad;
+
+                const div = document.createElement('div');
+                div.classList.add('item-carrito');
+                div.innerHTML = `
+                    <div class="item-carrito-info">
+                        <span class="item-carrito-titulo">${item.cantidad}x ${item.titulo}</span>
+                        <span class="item-carrito-talla">Tamaño: ${item.talla}</span>
+                        <span class="item-carrito-ingredientes">Con: ${item.ingredientes}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <strong>$${subtotal.toFixed(2)}</strong>
+                        <button class="btn-eliminar-item" onclick="eliminarDelCarrito('${item.idUnique}')">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                `;
+                lista.appendChild(div);
+            });
+
+            contador.textContent = itemsTotales;
+            totalMonto.textContent = `$${total.toFixed(2)}`;
+        }
+
+        function enviarCarritoWhatsApp() {
+            if (carrito.length === 0) {
+                alert("El carrito está vacío.");
+                return;
+            }
+
+            const nombre = document.getElementById('checkNombre').value.trim();
+            const metodo = document.getElementById('checkMetodo').value;
+            const direccion = document.getElementById('checkDireccion').value.trim();
+
+            if (!nombre) {
+                alert("Por favor, introduce tu nombre.");
+                return;
+            }
+
+            if (metodo === 'Domicilio' && !direccion) {
+                alert("Por favor, introduce la dirección de entrega o el número de mesa.");
+                return;
+            }
+
+            let numeroTelefono = "584120000000"; // Reemplaza con tu número real de WhatsApp
+            
+            let mensaje = `🍕 *NUEVO PEDIDO - PIZZERÍA* 🍕\n\n`;
+            mensaje += `👤 *Cliente:* ${nombre}\n`;
+            
+            if (metodo === 'Retiro') {
+                mensaje += `📍 *Modalidad:* Cliente retira en el Local 🏬\n`;
+            } else {
+                mensaje += `📍 *Entrega/Mesa:* ${direccion}\n`;
+            }
+            
+            mensaje += `---------------------------------------\n`;
+
+            let total = 0;
+            carrito.forEach(item => {
+                const subtotal = item.precio * item.cantidad;
+                total += subtotal;
+                mensaje += `• *${item.cantidad}x ${item.titulo}* (${item.talla})\n`;
+                mensaje += `  _Ingredientes:_ ${item.ingredientes}\n`;
+                mensaje += `  _Subtotal:_ $${subtotal.toFixed(2)}\n\n`;
+            });
+
+            mensaje += `---------------------------------------\n`;
+            mensaje += `💰 *TOTAL A PAGAR:* $${total.toFixed(2)}`;
+
+            const url = `https://api.whatsapp.com/send?phone=${numeroTelefono}&text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
